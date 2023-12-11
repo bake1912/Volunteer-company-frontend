@@ -1,9 +1,16 @@
-import { Button, Input, Select } from 'antd';
+import { Button, Input, Select, message } from 'antd';
 import { FormikValues, useFormik } from 'formik';
-import React, { memo } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import *  as Yup from 'yup'
 import endpoints from '../../../data/endpoint';
+import '../style/Login.scss'
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+
 export const Login = memo(() => {
+
+    const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
+    const [messageApi, contextHolder] = message.useMessage();
 
     const validationSchema = Yup.object().shape({
         email: Yup.string().required().email(),
@@ -15,15 +22,19 @@ export const Login = memo(() => {
         password: '',
     };
 
-    const onSubmit = (values: FormikValues) => {
-        fetch(endpoints.auth.login, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(values)
-        })
+    const signedIn = (email: string,id:number) => {
+        localStorage.setItem('email', JSON.stringify({email,id}))
+        setIsSignedIn(true);
+    }
+
+    const notSignedIn = () => {
+        error();
+        setIsSignedIn(false);
+    }
+
+    const onSubmit = async (values: FormikValues) => {
+        await axios.post(endpoints.user.login, values)
+            .then(resp => resp.data.email ? signedIn(resp.data.email,resp.data.id) : notSignedIn())
     }
 
     const formik = useFormik({
@@ -33,38 +44,61 @@ export const Login = memo(() => {
         onSubmit: onSubmit
     });
 
+    const error = () => {
+        messageApi.open({
+            type: 'error',
+            content: 'Data is uncorrect',
+        });
+    };
 
+    const navigate = useNavigate();
+    useEffect(() => {
+
+        if (isSignedIn) {
+            navigate("/volunteers/request")
+        };
+
+    }, [isSignedIn])
     return (
-        <div className='register'>
-            <h1>Login</h1>
-            <form
-                style={{ width: '30%', display: 'flex', flexDirection: 'column' }}
-                onSubmit={formik.handleSubmit}
-            >
-                <Input
-                    placeholder='email'
-                    value={formik.values.email}
-                    onChange={formik.handleChange}
-                    name='email'
-                />
-                {formik.errors.email && formik.touched.email && (
-                    <div style={{ color: 'red' }}>{formik.errors.email}</div>
-                )}
-                <Input
-                    placeholder='password'
-                    value={formik.values.password}
-                    onChange={formik.handleChange}
-                    name='password'
-                    type='password'
-                />
-                {formik.errors.password && formik.touched.password && (
-                    <div style={{ color: 'red' }}>{formik.errors.password}</div>
-                )}
-
-                <Button type='primary' htmlType='submit'>
-                    Submit
-                </Button>
-            </form>
+        <div className='greeting'>
+            {contextHolder}
+            <div className="new_user">
+                <h1>New user?</h1>
+                <h2>Sign up to save your personal information</h2>
+                <Button onClick={() => navigate('/volunteers/register')}>Sign up</Button>
+            </div>
+            <div className="welcome_back">
+                <h1>Welcome back</h1>
+                <form
+                    style={{ width: '30%', display: 'flex', flexDirection: 'column' }}
+                    onSubmit={formik.handleSubmit}
+                >
+                    <p>Email</p>
+                    <Input
+                        placeholder='email'
+                        value={formik.values.email}
+                        onChange={formik.handleChange}
+                        name='email'
+                    />
+                    {formik.errors.email && formik.touched.email && (
+                        <div style={{ color: 'red' }}>{formik.errors.email}</div>
+                    )}
+                    <p>Password</p>
+                    <Input
+                        placeholder='password'
+                        value={formik.values.password}
+                        onChange={formik.handleChange}
+                        name='password'
+                        type='password'
+                    />
+                    {formik.errors.password && formik.touched.password && (
+                        <div style={{ color: 'red' }}>{formik.errors.password}</div>
+                    )}
+                    <Button type='primary' htmlType='submit'>
+                        Submit
+                    </Button>
+                </form>
+            </div>
         </div>
     );
 })
