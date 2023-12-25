@@ -2,6 +2,7 @@
   "name": "kp",
   "version": "0.1.0",
   "private": true,
+  "homepage": "http://localhost:3000/volunteers/login",
   "dependencies": {
     "@ant-design/icons": "^5.2.6",
     "@reduxjs/toolkit": "^1.9.7",

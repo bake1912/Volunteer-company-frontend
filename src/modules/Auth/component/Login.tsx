@@ -22,8 +22,13 @@ export const Login = memo(() => {
         password: '',
     };
 
-    const signedIn = (email: string,id:number) => {
-        localStorage.setItem('email', JSON.stringify({email,id}))
+    const signedIn = (data: any) => {
+
+        localStorage.setItem('userData', JSON.stringify({ email: data.email, id: data.id, role: data.roleName }));
+        data.roleName === 'member' ?
+            navigate('/volunteers/request')
+            : navigate('/volunteers/items')
+
         setIsSignedIn(true);
     }
 
@@ -34,7 +39,7 @@ export const Login = memo(() => {
 
     const onSubmit = async (values: FormikValues) => {
         await axios.post(endpoints.user.login, values)
-            .then(resp => resp.data.email ? signedIn(resp.data.email,resp.data.id) : notSignedIn())
+            .then(resp => resp.data.email ? signedIn(resp.data) : notSignedIn())
     }
 
     const formik = useFormik({

@@ -11,6 +11,7 @@ import { useUser } from '../../hooks/useUser';
 const Header = memo(() => {
     const userData = JSON.parse(localStorage.getItem('userData') as string);
     const { fetchData } = useUser();
+    
     useEffect(() => {
         fetchData()
     }, []);
@@ -52,9 +53,9 @@ const Header = memo(() => {
                 <Menu mode='horizontal' title='Settings' style={{ width: 130, borderRadius: 15 }} >
                     <Menu.SubMenu title="Settings">
                         <Menu.Item>
-                            <Link to="/volunteers/user">
+                            {userData ? userData.role === 'admin' ? <Link to="/volunteers/user">
                                 Users
-                            </Link>
+                            </Link> : null : null}
                         </Menu.Item>
                         <Menu.Item>
                             <Link onClick={() => localStorage.setItem('userData', '')} to="/volunteers/login">

@@ -36,7 +36,10 @@ const Register = memo(() => {
             .then(data => {
                 if (data.email) {
                     localStorage.setItem('userData', JSON.stringify({ email: data.email, id: data.id, role: data.roleName }));
-                    navigate('/volunteers/request')
+                    data.roleName === 'member' ?
+                        navigate('/volunteers/request')
+                        : navigate('/volunteers/items')
+
                     if (fileList) {
                         const formData = new FormData();
                         formData.append('photo', fileList as File)

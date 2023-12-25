@@ -11,6 +11,7 @@ import axios from 'axios';
 import endpoints from '../../../data/endpoint';
 import { IRequest, addRequest } from '../../../redux/slice/request-slice';
 import Item, { IItem } from '../../items/component/Item';
+import volon from '../../../data/images/Voluteer.jpg'
 const { Option } = Select;
 
 const RequestPage = memo(() => {
@@ -64,14 +65,10 @@ const RequestPage = memo(() => {
     }
 
     return (
-        <div className='main_page'>
+        <div  className='main_page'>
             <Header />
             <main className='main'>
                 {contextHolder}
-                <div className="main-left">
-                    <img src={'https://concord3000.com.ua/uploads/41/Symbol_Concord.png'} style={{ height: '100%', width: '100%' }} alt="charity" />
-                </div>
-                <div className="main-right">
                     <h1 style={{ textAlign: 'center' }}>Request form</h1>
                     <form style={{ display: 'flex', flexDirection: 'column' }} onSubmit={formik.handleSubmit}>
                         <p>Description</p>
@@ -143,7 +140,6 @@ const RequestPage = memo(() => {
                             Submit Request
                         </Button>
                     </form>
-                </div>
             </main>
         </div>
     );
